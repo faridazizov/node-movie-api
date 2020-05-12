@@ -1,3 +1,4 @@
+const mongoose= require('mongoose');
 const express=require('express');
 const router= express.Router();
 
@@ -41,6 +42,28 @@ router.get('/Top10',(req,res,next)=>{
    });
 });
 
+router.get('/full',(req,res,next)=>{
+    const promise=Movie.aggregate([
+        {
+            $lookup:{
+                from:'directors',
+                localField:'director_id',
+                foreignField:'_id',
+                as:'director'
+            }
+        },
+        {
+            $unwind:'$director'
+        }
+
+    ]) ;
+
+    promise.then((movies)=>{
+        res.json(movies);
+    }).catch((err)=>{
+        res.json(err);
+    });
+});
 
 
 router.get('/:movie_id',(req,res,next)=>{
@@ -100,6 +123,39 @@ router.get('/between/:start_year/:end_year',(req,res,next)=>{
         res.json(err);
     });
 });
+
+
+router.get('/full/:movie_id',(req,res,next)=>{
+    const id=mongoose.Types.ObjectId(req.params.movie_id);
+   const promise=Movie.aggregate([
+       {
+           $match:{
+               '_id':id
+           }
+       },
+       {
+           $lookup:{
+               from:'directors',
+               localField:'director_id',
+               foreignField:'_id',
+               as:'director'
+           }
+       },
+       {
+           $unwind:'$director'
+       }
+
+   ]);
+
+   promise.then((movie)=>{
+      res.json(movie);
+   }).catch((err)=>{
+       res.json(err);
+   });
+
+});
+
+
 
 
 
