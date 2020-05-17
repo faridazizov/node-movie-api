@@ -67,7 +67,7 @@ router.get('/full',(req,res,next)=>{
 
 
 router.get('/:movie_id',(req,res,next)=>{
-    const promise=Movie.findById(req.params.movie_id,'title year country imdb_score');
+    const promise=Movie.findById(req.params.movie_id);
 
     promise.then((movie)=>{
         if(!movie) {
@@ -100,7 +100,7 @@ router.delete('/:movie_id',(req,res,next)=>{
 
     promise.then((movie)=>{
         if(movie)
-            res.json({status:'ok',message:'silindi'});
+            res.json({status:1,message:'silindi'});
         else
             next({message:'not deleted)),ohh my god,,movie not found',code:777});
     }).catch((err)=>{
